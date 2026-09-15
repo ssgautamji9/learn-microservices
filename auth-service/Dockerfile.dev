@@ -1,0 +1,15 @@
+FROM node:24-alpine
+
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache openssl
+
+COPY package*.json pnpm-lock.yaml ./
+
+
+RUN pnpm i
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "npx prisma generate && pnpm run dev"]
