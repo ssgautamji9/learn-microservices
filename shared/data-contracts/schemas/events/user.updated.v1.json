@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:solutionspool:events:user.updated:v1",
+  "title": "UserUpdatedV1",
+  "description": "Published by Auth Service after a user identity is updated. Consumed by User Service to update the profile.",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique per event. Consumers can use it for idempotency / de-duplication."
+    },
+    "event": {
+      "const": "user.updated"
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity id owned by Auth Service."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["eventId", "event", "userId", "displayName", "updatedAt"],
+  "additionalProperties": false
+}

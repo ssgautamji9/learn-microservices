@@ -1,0 +1,30 @@
+{
+  "name": "@solutionspool/data-contracts",
+  "version": "1.1.0",
+  "description": "Cross-service event contracts (JSON Schema) with generated TypeScript types and Ajv runtime validation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate-types.mjs",
+    "build": "pnpm generate && tsc",
+    "test": "pnpm build && node --test \"test/*.test.mjs\"",
+    "publish": "pnpm publish"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^7.0.2"
+  },
+  "packageManager": "pnpm@12.4.1"
+}

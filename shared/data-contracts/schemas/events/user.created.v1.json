@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:solutionspool:events:user.created:v1",
+  "title": "UserCreatedV1",
+  "description": "Published by Auth Service after a new user identity is created. Consumed by User Service to initialise the profile.",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique per event. Consumers can use it for idempotency / de-duplication."
+    },
+    "event": {
+      "const": "user.created"
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity id owned by Auth Service."
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "enum": ["USER", "ADMIN"]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["eventId", "event", "userId", "email", "name", "role", "createdAt"],
+  "additionalProperties": false
+}

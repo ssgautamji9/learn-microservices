@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { prisma } from "../config/prisma";
 import { AppError } from "../utils/httpError";
 import { hashPassword, comparePassword } from "../utils/password";
@@ -19,6 +20,7 @@ export async function registerUser(input: TRegisterInput) {
   });
 
   await publishUserCreated({
+    eventId: randomUUID(),
     event: "user.created",
     userId: user.id,
     email: user.email,

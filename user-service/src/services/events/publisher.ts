@@ -1,5 +1,5 @@
 import { getRabbitMQ } from "@solutionspool/rabbitmq";
-import { assertValidEvent, UserCreatedV1 } from "@solutionspool/data-contracts";
+import { assertValidEvent, UserCreatedV1, UserUpdatedV1  } from "@solutionspool/data-contracts";
 import { env } from "../../config/env";
 
 /**
@@ -17,10 +17,10 @@ export async function publishEvent<T>(
 }
 
 /**
- * Publishes the 'user.created' event when a new user is created.
+ * Publishes the 'user.updated' event when a user's profile is updated.
  * The payload is validated against the shared JSON Schema contract before it leaves this service.
  */
-export async function publishUserCreated(payload: UserCreatedV1): Promise<boolean> {
-  const event = assertValidEvent("user.created", payload);
-  return publishEvent("user.created", event);
+export async function publishUserUpdated(payload: UserUpdatedV1): Promise<boolean> {
+  const event = assertValidEvent("user.updated", payload);
+  return publishEvent("user.updated", event);
 }
