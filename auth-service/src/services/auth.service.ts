@@ -4,7 +4,7 @@ import { AppError } from "../utils/httpError";
 import { hashPassword, comparePassword } from "../utils/password";
 import { signAccessToken } from "../utils/jwt";
 import { TRegisterInput, TLoginInput } from "../validators/auth.validators";
-import { publishUserCreated } from "./events/publisher";
+import { publishEvent } from "./events/publisher";
 import { toPublicUser, toSelfUser } from "../dtos/user.dto";
 import { Role } from "@prisma/client";
 
@@ -19,7 +19,7 @@ export async function registerUser(input: TRegisterInput) {
     data: { email: input.email, passwordHash, name: input.name, role: input.role as Role },
   });
 
-  await publishUserCreated({
+  await publishEvent("user.created", {
     eventId: randomUUID(),
     event: "user.created",
     userId: user.id,

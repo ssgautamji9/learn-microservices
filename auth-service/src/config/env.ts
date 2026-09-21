@@ -8,7 +8,6 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("15m"),
   BCRYPT_ROUNDS: z.coerce.number().default(12),
   RABBITMQ_URL: z.string().default("amqp://guest:guest@localhost:5672"),
-  RABBITMQ_EXCHANGE: z.string().default("auth_events"),
 });
 
 const parsed = envSchema.safeParse(process.env);

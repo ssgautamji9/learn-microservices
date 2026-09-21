@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { Request, Response, NextFunction } from "express";
 import * as userService from "../services/user.service";
 import { toPublicProfileResponse, toUserProfileResponse } from "../dtos/userProfile.dto";
-import { publishUserUpdated } from "../services/events/publisher"; 
+import { publishEvent } from "../services/events/publisher";
 export async function getMyProfileHandler(req: Request, res: Response, next: NextFunction) {
   try {
     // const userId = req.user!.id;
@@ -32,7 +32,7 @@ export async function updateMyProfileHandler(req: Request, res: Response, next: 
     const updatedProfile = await userService.updateProfileByUserId(userId, req.body);
     // publish user.updated event for other services to consume
 
-    await publishUserUpdated({
+    await publishEvent("user.updated", {
       eventId: randomUUID(),
       event:"user.updated",
       userId,

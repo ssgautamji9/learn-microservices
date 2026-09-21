@@ -12,8 +12,8 @@ importers:
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
       '@solutionspool/data-contracts':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: 1.2.0
+        version: 1.2.0
       '@solutionspool/rabbitmq':
         specifier: ^1.0.3
         version: 1.0.3
@@ -244,8 +244,8 @@ packages:
   '@prisma/get-platform@5.22.0':
     resolution: {integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==}
 
-  '@solutionspool/data-contracts@1.1.0':
-    resolution: {integrity: sha512-JZVI60RmjJDPRcm2AccCg3y66EhmdpiI+cvUdXXnWJDnFOhPqKLfs1awj+Ew6QZ51Nb0oLP5AXPVKgbGLae4Lw==}
+  '@solutionspool/data-contracts@1.2.0':
+    resolution: {integrity: sha512-WIYO4aX6K0mzjKq0wD4wnRAmZewmxbxzPlZsei5D3S5cZjkHpT3gf3+h/xW+vHhjlt9D29BAGUnkSchCdbuCIg==}
 
   '@solutionspool/rabbitmq@1.0.3':
     resolution: {integrity: sha512-IWYD+uIwU0JVluGTsIWWwFD8x4OgT+E+0aB06q/BJ7Qe/YIUL72LK8oMsEVrhDnf3l2Qya8zfds04ZGcKET/tA==}
@@ -1088,7 +1088,7 @@ snapshots:
     dependencies:
       '@prisma/debug': 5.22.0
 
-  '@solutionspool/data-contracts@1.1.0':
+  '@solutionspool/data-contracts@1.2.0':
     dependencies:
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)

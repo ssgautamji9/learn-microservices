@@ -3,10 +3,12 @@ import { env } from "./config/env";
 import { prisma } from "./config/prisma";
 import { initRabbitMQ, getRabbitMQ } from "@solutionspool/rabbitmq"
 import { startEventConsumer } from "./services/events/consumer";
+import { EXCHANGES } from "./services/events/topology";
 
 async function main() {
   try {
     await initRabbitMQ({ url: env.RABBITMQ_URL });
+    await getRabbitMQ().assertExchange(EXCHANGES.USER_EVENTS, "topic");
     await startEventConsumer();
   } catch (error) {
     console.error("RabbitMQ event consumer initialization error during startup:", (error as Error).message);

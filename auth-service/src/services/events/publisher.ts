@@ -1,26 +1,27 @@
 import { getRabbitMQ } from "@solutionspool/rabbitmq";
-import { assertValidEvent, UserCreatedV1 } from "@solutionspool/data-contracts";
-import { env } from "../../config/env";
+import { assertValidEvent, EventMap } from "@solutionspool/data-contracts";
+import { EXCHANGES } from "./topology";
 
 /**
- * Generic, reusable event publisher.
- * Publishes any domain event payload to a RabbitMQ exchange with the given routing key.
+ * Every event this service publishes -> the exchange it goes to.
+ * Convention: one topic exchange per service, events told apart by routing key.
+ * Add a second exchange only for a concrete reason (different routing type, permissions or DLQ policy).
+ * Never publish into an exchange owned by another service.
  */
-export async function publishEvent<T>(
-  routingKey: string,
-  payload: T,
-  exchangeName: string = env.RABBITMQ_EXCHANGE,
-  exchangeType: "topic" | "direct" | "fanout" = "topic"
+const PUBLISHED_EVENTS = {
+  "user.created": EXCHANGES.AUTH_EVENTS,
+} as const;
+
+export type PublishedEvent = keyof typeof PUBLISHED_EVENTS;
+
+/**
+ * Validates the payload against its JSON Schema contract, then publishes it to the
+ * exchange registered for that event, using the event name as the routing key.
+ */
+export async function publishEvent<K extends PublishedEvent>(
+  event: K,
+  payload: EventMap[K],
 ): Promise<boolean> {
-  const rabbitmq = getRabbitMQ();
-  return rabbitmq.publish(exchangeName, routingKey, payload, {}, exchangeType);
-}
-
-/**
- * Publishes the 'user.created' event when a new user is created.
- * The payload is validated against the shared JSON Schema contract before it leaves this service.
- */
-export async function publishUserCreated(payload: UserCreatedV1): Promise<boolean> {
-  const event = assertValidEvent("user.created", payload);
-  return publishEvent("user.created", event);
+  const validated = assertValidEvent(event, payload);
+  return getRabbitMQ().publish(PUBLISHED_EVENTS[event], event, validated);
 }

@@ -71,7 +71,6 @@ See [.env.example](.env.example):
 | `JWT_EXPIRES_IN` | Access token lifetime, e.g. `15m` |
 | `BCRYPT_ROUNDS` | bcrypt cost factor |
 | `RABBITMQ_URL` | AMQP URL for RabbitMQ broker (`amqp://guest:guest@rabbitmq:5672` in Docker) |
-| `RABBITMQ_EXCHANGE` | RabbitMQ topic exchange name (`auth_events`) |
 
 Copy `.env.example` to `.env` before running locally. Never commit `.env`.
 
