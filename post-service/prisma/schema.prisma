@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id            String   @id @default(uuid())
+  // Identity id owned by Auth Service. No cross-service foreign key.
+  authorId      String
+  title         String
+  subTitle      String?
+  // Image URLs only for now; real uploads would go to object storage.
+  images        String[]
+  tags          String[]
+  // Denormalised counters; will be driven by events from Like/Comment services later.
+  likesCount    Int      @default(0)
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([authorId])
+}

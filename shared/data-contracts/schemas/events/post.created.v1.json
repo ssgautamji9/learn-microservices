@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:solutionspool:events:post.created:v1",
+  "title": "PostCreatedV1",
+  "description": "Published by Post Service after a post is created. Deliberately minimal: consumers get the ids they need, not the post content.",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique per event. Consumers use it to de-duplicate redelivered messages."
+    },
+    "event": {
+      "const": "post.created"
+    },
+    "postId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity id of the author, owned by Auth Service (same id as UserProfile.userId)."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["eventId", "event", "postId", "authorId", "createdAt"],
+  "additionalProperties": false
+}

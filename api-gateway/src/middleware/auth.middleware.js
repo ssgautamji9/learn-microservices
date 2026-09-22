@@ -1,6 +1,6 @@
-
 import { env } from "../config/env.js";
 import jwt from "jsonwebtoken";
+
 export function authenticate(req, res, next) {
   const authorization = req.headers["authorization"];
 
@@ -11,6 +11,8 @@ export function authenticate(req, res, next) {
   const token = authorization.split(" ")[1];
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET);
+    req.user = { id: decoded.sub, role: decoded.role };
+    // Trusted identity for downstream services. requestContext already removed any client-sent values.
     req.headers["x-user-id"] = decoded.sub;
     req.headers["x-user-role"] = decoded.role;
     next();
@@ -20,13 +22,10 @@ export function authenticate(req, res, next) {
 }
 
 export function authorize(roles = []) {
-
   return (req, res, next) => {
-      const userRole = req.headers["x-user-role"];
-      if (!roles.includes(userRole)) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      next();
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
   };
-
 }

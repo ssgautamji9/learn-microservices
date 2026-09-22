@@ -55,3 +55,22 @@ test("user.updated: rejects wrong event const, empty name and extra fields", () 
 test("a user.created payload does not satisfy the user.updated contract", () => {
   assert.equal(isValidEvent("user.updated", valid()), false);
 });
+
+const validPost = () => ({
+  eventId: "6f1c6a3e-8b0f-4c0a-9d55-3a1e7d2b9f10",
+  event: "post.created",
+  postId: "post-1",
+  authorId: "user-123",
+  createdAt: new Date().toISOString(),
+});
+
+test("post.created: accepts a valid payload", () => {
+  assert.equal(isValidEvent("post.created", validPost()), true);
+});
+
+test("post.created: rejects missing authorId, extra fields (e.g. leaked content) and bad eventId", () => {
+  const { authorId, ...noAuthor } = validPost();
+  assert.equal(isValidEvent("post.created", noAuthor), false);
+  assert.equal(isValidEvent("post.created", { ...validPost(), title: "hello" }), false);
+  assert.equal(isValidEvent("post.created", { ...validPost(), eventId: "nope" }), false);
+});

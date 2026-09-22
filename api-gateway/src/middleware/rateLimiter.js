@@ -1,34 +1,36 @@
 import redis from "../services/redis.service.js";
 
-const DEFAULT_RATE_LIMIT = 10; // Maximum number of requests per minute
-const DEFAULT_WINDOW_SIZE = 60; // Window size in seconds
-
-const rateLimiter = (rateLimit, window) => {
-
+/**
+ * Fixed-window rate limiter backed by Redis.
+ *
+ * Key = policy name + subject, so /auth/login and /users/* no longer share one counter.
+ * Subject = verified user id when authenticated, otherwise the client IP.
+ */
+export function rateLimit({ name, limit, windowSeconds }) {
   return async (req, res, next) => {
+    const subject = req.user ? `user:${req.user.id}` : `ip:${req.ip}`;
+    const key = `rate_limit:${name}:${subject}`;
 
-    const RATE_LIMIT = rateLimit || DEFAULT_RATE_LIMIT;
-    const WINDOW_SIZE = window || DEFAULT_WINDOW_SIZE;
-
-    const ip = req.ip;
-    const userId = req.headers['x-user-id'] ?? null;
-
-    const RATE_LIMIT_KEY = userId ? `rate_limit:user:${userId}` : `rate_limit:${ip}`;
-
-    const count = await redis.INCR(RATE_LIMIT_KEY);
-
-    if (count && parseInt(count) > RATE_LIMIT) {
-      return res.status(429).json({ message: "Too many requests" });
+    let count;
+    let ttl;
+    try {
+      // MULTI/EXEC runs all three commands atomically. EXPIRE ... NX sets the TTL only if the key
+      // has none, so a crash between INCR and EXPIRE can't leave a counter that never resets.
+      [count, , ttl] = await redis.multi().incr(key).expire(key, windowSeconds, "NX").ttl(key).exec();
+    } catch (error) {
+      // Fail open: if Redis is down we'd rather serve traffic unlimited than take the whole API down.
+      // (Login/payment endpoints often choose to fail closed instead.)
+      console.error(`[rate-limit] Redis error, allowing request: ${error.message}`);
+      return next();
     }
-    if (count === 1) {
-      await redis.expire(RATE_LIMIT_KEY, WINDOW_SIZE);
+
+    res.set("X-RateLimit-Limit", String(limit));
+    res.set("X-RateLimit-Remaining", String(Math.max(0, limit - count)));
+
+    if (count > limit) {
+      res.set("Retry-After", String(Math.max(ttl, 1)));
+      return res.status(429).json({ message: "Too many requests. Please try again later." });
     }
     next();
   };
-};
-
-export default rateLimiter;
-
-export const LoginRateLimiter = rateLimiter(5, 60); // Example: 5 requests per minute for login
-export const SignupRateLimiter = rateLimiter(3, 60); // Example: 3 requests per minute for signup
-export const DefaultRateLimiter = rateLimiter(); // Example: default rate limiter with 10 requests per minute
+}

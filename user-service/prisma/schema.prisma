@@ -15,6 +15,15 @@ model UserProfile {
   mobileNumber String?
   gender       String?
   bio          String?
+  // Denormalised read copy; source of truth is Post Service. Updated by post.created events.
+  postsCount   Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Inbox table: event ids already handled. Makes at-least-once delivery safe for non-idempotent
+// handlers (e.g. incrementing a counter). Written in the same transaction as the handler's work.
+model ProcessedEvent {
+  eventId     String   @id
+  processedAt DateTime @default(now())
 }

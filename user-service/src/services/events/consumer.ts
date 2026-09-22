@@ -2,6 +2,7 @@ import { getRabbitMQ } from "@solutionspool/rabbitmq";
 import { assertValidEvent, EventMap, EventName } from "@solutionspool/data-contracts";
 import { EXCHANGES, QUEUES } from "./topology";
 import { handleUserCreated } from "./handlers/user-created.handler";
+import { handlePostCreated } from "./handlers/post-created.handler";
 
 interface Subscription<K extends EventName> {
   /** Exchange owned by the publishing service. */
@@ -38,6 +39,12 @@ const subscriptions = [
     event: "user.created",
     queue: QUEUES.USER_CREATED,
     handler: handleUserCreated,
+  }),
+  subscription({
+    exchange: EXCHANGES.POST_EVENTS,
+    event: "post.created",
+    queue: QUEUES.POST_CREATED,
+    handler: handlePostCreated,
   }),
 ];
 

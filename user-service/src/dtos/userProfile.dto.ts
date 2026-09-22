@@ -9,6 +9,7 @@ const UserProfileSchema = z.object({
   mobileNumber: z.string().nullable(),
   gender: z.string().nullable(),
   bio: z.string().nullable(),
+  postsCount: z.number().int(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -19,6 +20,7 @@ const PublicProfileSchema = UserProfileSchema.pick({
   displayName: true,
   profileImage: true,
   bio: true,
+  postsCount: true,
   createdAt: true,
   updatedAt: true,
 });

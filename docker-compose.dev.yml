@@ -11,6 +11,7 @@ services:
     depends_on:
       - auth-service
       - user-service
+      - post-service
       - app-redis
     volumes:
       - ./api-gateway/src:/app/src
@@ -58,6 +59,28 @@ services:
       - ./user-service/src:/app/src
       - ./user-service/prisma:/app/prisma
       - ./user-service/tsconfig.json:/app/tsconfig.json
+
+  post-service:
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3003:3000"
+    env_file:
+      - ./post-service/.env
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/post_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./post-service/src:/app/src
+      - ./post-service/prisma:/app/prisma
+      - ./post-service/tsconfig.json:/app/tsconfig.json
 
   postgres:
     image: postgres:16-alpine

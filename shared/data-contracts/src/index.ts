@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import Ajv2020, { ErrorObject, ValidateFunction } from "ajv/dist/2020";
 import addFormats from "ajv-formats";
-import type { UserCreatedV1, UserUpdatedV1 } from "./generated/events";
+import type { PostCreatedV1, UserCreatedV1, UserUpdatedV1 } from "./generated/events";
 
-export type { UserCreatedV1, UserUpdatedV1 } from "./generated/events";
+export type { PostCreatedV1, UserCreatedV1, UserUpdatedV1 } from "./generated/events";
 
 /**
  * Event name (also the RabbitMQ routing key) -> payload type.
@@ -13,6 +13,7 @@ export type { UserCreatedV1, UserUpdatedV1 } from "./generated/events";
 export interface EventMap {
   "user.created": UserCreatedV1;
   "user.updated": UserUpdatedV1;
+  "post.created": PostCreatedV1;
 }
 
 export type EventName = keyof EventMap;
@@ -21,6 +22,7 @@ export type EventName = keyof EventMap;
 const SCHEMA_FILES: Record<EventName, string> = {
   "user.created": "user.created.v1.json",
   "user.updated": "user.updated.v1.json",
+  "post.created": "post.created.v1.json",
 };
 
 const schemasDir = path.join(__dirname, "..", "schemas", "events");

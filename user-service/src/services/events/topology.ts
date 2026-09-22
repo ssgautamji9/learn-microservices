@@ -10,9 +10,13 @@ export const EXCHANGES = {
   AUTH_EVENTS: "auth_events",
   /** Published by User Service (user.updated). */
   USER_EVENTS: "user_events",
+  /** Published by Post Service (post.created). User Service only consumes from it. */
+  POST_EVENTS: "post_events",
 } as const;
 
 export const QUEUES = {
   /** User Service's own queue, bound to AUTH_EVENTS with routing key `user.created`. */
   USER_CREATED: "user_service_user_created",
+  /** Bound to POST_EVENTS with routing key `post.created`. */
+  POST_CREATED: "user_service_post_created",
 } as const;
